@@ -1,20 +1,15 @@
 const express = require("express");
-const userRoutes = require("./userRoutes");
+const userRoutes = require("./userRoutes"); // Path to your user routes file
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.json()); // Middleware to parse JSON data
+app.use(express.json()); // Middleware to parse incoming JSON data
 
-// Root route to check if the server is running
-app.get("/", (req, res) => {
-  res.send("✅ User Service is running!");
-});
+// Use user routes
+app.use("/users", userRoutes);
 
-// User routes
-app.use("/api/users", userRoutes);
-
-// Start server
+// Start the server
 app.listen(PORT, () => {
-  console.log(`✅ User service running at: http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
