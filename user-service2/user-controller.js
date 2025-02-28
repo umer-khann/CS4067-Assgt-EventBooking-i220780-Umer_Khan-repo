@@ -69,4 +69,26 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile };
+const getAllUsers = async (req, res) => {
+  try {
+    console.log("Fetching all users...");
+    const result = await pool
+      .query("SELECT id, username, email FROM users")
+      .catch((err) => {
+        console.log("Error executing query:", err.message);
+      });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No users found" });
+    }
+
+    log("Fetched all users");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(`Error fetching all users: ${err.message}`);
+    log(`Error fetching all users: ${err.message}`, "ERROR");
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserProfile, getAllUsers };
