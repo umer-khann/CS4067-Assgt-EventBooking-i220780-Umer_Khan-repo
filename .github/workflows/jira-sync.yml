@@ -1,22 +1,24 @@
-name: Sync GitHub Issues with Jira
+name: Sync GitHub Kanban with Jira
 
 on:
-  issues:
-    types: [opened, edited, deleted]
   project_card:
     types: [moved]
 
 jobs:
-  sync-issues:
+  sync-to-jira:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Issue to Jira
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create Jira Issue
         uses: atlassian/gajira-create@v3
         with:
-          project: "CIUK"
-          issuetype: "Task"
-          summary: "${{ github.event.issue.title }}"
-          description: "${{ github.event.issue.body }}"
-          jira-base-url: "https://umerkhan2003.atlassian.net"
-          username: ${{ secrets.JIRA_EMAIL }}
-          api-token: ${{ secrets.JIRA_API_TOKEN }}
+          project: "CIUK"  # Replace with your actual Jira project key
+          issuetype: "Task"  # Change if needed
+          summary: "Sync GitHub Kanban card"
+          description: "Issue created from GitHub Kanban board"
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_SITE }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
