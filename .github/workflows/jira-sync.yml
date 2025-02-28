@@ -1,0 +1,22 @@
+name: Sync GitHub Issues with Jira
+
+on:
+  issues:
+    types: [opened, edited, deleted]
+  project_card:
+    types: [moved]
+
+jobs:
+  sync-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Issue to Jira
+        uses: atlassian/gajira-create@v3
+        with:
+          project: "CIUK"
+          issuetype: "Task"
+          summary: "${{ github.event.issue.title }}"
+          description: "${{ github.event.issue.body }}"
+          jira-base-url: "https://umerkhan2003.atlassian.net"
+          username: ${{ secrets.JIRA_EMAIL }}
+          api-token: ${{ secrets.JIRA_API_TOKEN }}
