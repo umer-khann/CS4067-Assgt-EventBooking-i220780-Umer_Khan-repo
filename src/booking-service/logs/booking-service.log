@@ -1,0 +1,3 @@
+[2025-03-02 22:52:52] [Booking Service] [INFO] createBooking: Creating booking for user 67c49a6d206f0234e52df520 for event 67c49aca9833323a26d978cb
+[2025-03-02 22:52:52] [Booking Service] [INFO] createBooking: Booking created with id: 67c49af46531d89e26ad5fe8
+[2025-03-02 22:52:52] [Booking Service] [INFO] createBooking: Notification sent for booking id: 67c49af46531d89e26ad5fe8

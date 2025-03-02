@@ -1,0 +1,3 @@
+[2025-03-02 22:50:37] [User Service] [INFO] registerUser: Attempting to register user with email: hamzaimran28@gmail.com
+[2025-03-02 22:50:37] [User Service] [INFO] registerUser: User registered successfully with id: 67c49a6d206f0234e52df520
+[2025-03-02 23:03:06] [User Service] [INFO] getUserProfile: Fetching user with id: 67c49a6d206f0234e52df520

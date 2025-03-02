@@ -1,0 +1,2 @@
+[2025-03-02 22:52:52] [Payment Service] [INFO] processPayment: Processing payment for user 67c49a6d206f0234e52df520 of amount 600
+[2025-03-02 22:52:52] [Payment Service] [INFO] processPayment: Payment processed successfully with id: 67c49af4227148e24548d06c
