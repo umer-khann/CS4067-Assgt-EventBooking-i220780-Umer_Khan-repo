@@ -85,8 +85,8 @@ Sends **notifications** to users upon successful booking and payment.
 | User Service         | Node.js (Express) + MongoDB |
 | Event Service        | Node.js (Express) + MongoDB |
 | Booking Service      | Node.js (Express) + MongoDB |
-| Payment Service      | Node.js (Express)           |
-| Notification Service | Node.js (Express)           |
+| Payment Service      | Node.js (Express) + MongoDB |
+| Notification Service | Node.js (Express) + MongoDB |
 
 ---
 
