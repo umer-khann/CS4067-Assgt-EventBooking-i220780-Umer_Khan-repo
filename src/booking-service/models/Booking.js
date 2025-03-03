@@ -1,4 +1,4 @@
-// booking-service/models/Booking.js booking
+// booking-service/models/Booking.js
 const mongoose = require("mongoose");
 
 const BookingSchema = new mongoose.Schema(
