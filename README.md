@@ -6,7 +6,7 @@ This is a **simple microservices-based event booking application**, designed to 
 
 ## 📖 Overview
 
-The system is split into the following **microservices**, each responsible for a specific domain:
+The system is split into the following **microservices**, each having a different responsibility:
 
 - **User Service**: Manages user registration, login, and profiles.
 - **Event Service**: Handles event creation, listing, and ticket availability.
