@@ -12,7 +12,7 @@ The system is split into the following **microservices**, each having a differen
 - **Event Service**: Handles event creation, listing, and ticket availability.
 - **Booking Service**: Manages user bookings, links them with events, and triggers payment and notifications.
 - **Payment Service**: Processes payments for bookings.
-- **Notification Service**: Sends email or SMS notifications to users after successful bookings and payments.
+- **Notification Service**: Sends notifications to users after successful bookings and payments.
 
 ---
 
