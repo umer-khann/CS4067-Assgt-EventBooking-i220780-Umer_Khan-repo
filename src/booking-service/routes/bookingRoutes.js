@@ -4,9 +4,9 @@ const router = express.Router();
 const {
   createBooking,
   getBookingById,
-} = require("../controllers/bookingController");
+} = require("../controllers/bookingController"); // Ensure this path is correct
 
-router.post("/", createBooking);
-router.get("/:id", getBookingById);
+router.post("/", createBooking); // Creating a booking
+router.get("/:id", getBookingById); // Fetch booking by ID
 
 module.exports = router;

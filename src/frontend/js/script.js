@@ -1,18 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const getBaseUrl = (service) => {
+    const isKubernetes =
+      window.location.hostname.includes(".svc.cluster.local") ||
+      window.location.hostname.includes("umer.devops.com");
+    const baseUrls = {
+      userService: isKubernetes ? "" : "http://host.docker.internal:3000",
+      eventService: isKubernetes ? "" : "http://host.docker.internal:3001",
+      bookingService: isKubernetes ? "" : "http://host.docker.internal:3002",
+      paymentService: isKubernetes ? "" : "http://host.docker.internal:3003",
+      notificationService: isKubernetes
+        ? ""
+        : "http://host.docker.internal:3004",
+    };
+    return baseUrls[service];
+  };
+
   // --- TAB SWITCHING FOR LOGIN/REGISTER ---
   const tabButtons = document.querySelectorAll(".tab-button");
   if (tabButtons.length > 0) {
     tabButtons.forEach((button) => {
       button.addEventListener("click", function () {
-        // Remove active class from all tab buttons
         tabButtons.forEach((btn) => btn.classList.remove("active"));
         this.classList.add("active");
 
-        // Hide all tab contents
         const tabContents = document.querySelectorAll(".tab-content");
         tabContents.forEach((content) => content.classList.remove("active"));
 
-        // Show the current tab content
         const tab = this.getAttribute("data-tab");
         document.getElementById(tab).classList.add("active");
       });
@@ -25,13 +38,11 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!currentPage) currentPage = "index.html";
   const user = localStorage.getItem("user");
 
-  // If a user is logged in and on the login page, redirect to dashboard.
   if (user && currentPage === "index.html") {
     window.location.href = "dashboard.html";
     return;
   }
 
-  // If no user is logged in and not on the login page, redirect to login.
   if (!user && currentPage !== "index.html") {
     window.location.href = "index.html";
     return;
@@ -47,8 +58,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // --- AUTHENTICATION (Login and Register) ---
-
-  // Handle Login
   if (document.getElementById("loginForm")) {
     document
       .getElementById("loginForm")
@@ -56,7 +65,9 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         const userId = document.getElementById("loginUserId").value.trim();
         try {
-          const response = await fetch(`http://localhost:3000/users/${userId}`);
+          const response = await fetch(
+            `${getBaseUrl("userService")}/users/${userId}`
+          );
           const data = await response.json();
           if (response.ok) {
             localStorage.setItem("user", JSON.stringify(data));
@@ -72,7 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  // Handle Registration
   if (document.getElementById("registerForm")) {
     document
       .getElementById("registerForm")
@@ -84,11 +94,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const payload = { username, email, password };
 
         try {
-          const response = await fetch("http://localhost:3000/users/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
+          const response = await fetch(
+            `${getBaseUrl("userService")}/users/register`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
           const data = await response.json();
           if (response.ok) {
             localStorage.setItem("user", JSON.stringify(data.user));
@@ -127,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const payload = { name, date, venue, availableTickets };
 
         try {
-          const response = await fetch("http://localhost:3001/events", {
+          const response = await fetch(`${getBaseUrl("eventService")}/events`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -148,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .getElementById("fetchEventsBtn")
       .addEventListener("click", async function () {
         try {
-          const response = await fetch("http://localhost:3001/events");
+          const response = await fetch(`${getBaseUrl("eventService")}/events`);
           const events = await response.json();
           const list = document.getElementById("eventsList");
           list.innerHTML = "";
@@ -156,11 +169,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const card = document.createElement("div");
             card.className = "log-card";
             card.innerHTML = `<h3>${event.name}</h3>
-              <p><strong>Venue:</strong> ${event.venue}</p>
-              <p><strong>Date:</strong> ${new Date(
-                event.date
-              ).toLocaleString()}</p>
-              <p><strong>Tickets:</strong> ${event.availableTickets}</p>`;
+          <p><strong>ID:</strong> ${event._id}</p>
+          <p><strong>Venue:</strong> ${event.venue}</p>
+          <p><strong>Date:</strong> ${new Date(event.date).toLocaleString()}</p>
+          <p><strong>Tickets:</strong> ${event.availableTickets}</p>`;
             list.appendChild(card);
           });
         } catch (err) {
@@ -188,12 +200,16 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("bookingAmount").value
         );
         const payload = { userId: userObj._id, eventId, tickets, amount };
+
         try {
-          const response = await fetch("http://localhost:3002/bookings", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
+          const response = await fetch(
+            `${getBaseUrl("bookingService")}/bookings`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
           const data = await response.json();
           document.getElementById("bookingResponse").innerText = response.ok
             ? "Booking confirmed with ID: " + data.booking._id
@@ -217,7 +233,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         try {
           const response = await fetch(
-            `http://localhost:3004/notifications?userId=${userObj._id}`
+            `${getBaseUrl("notificationService")}/notifications?userId=${
+              userObj._id
+            }` // using notificationService path
           );
           const notifications = await response.json();
           const list = document.getElementById("notificationsList");
@@ -267,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         try {
           const response = await fetch(
-            `http://localhost:3003/payments?userId=${userObj._id}`
+            `${getBaseUrl("paymentService")}/payments?userId=${userObj._id}` // using paymentService path
           );
           const payments = await response.json();
           const list = document.getElementById("paymentsList");
@@ -288,20 +306,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Create table body
           const tbody = document.createElement("tbody");
-          payments.forEach(function (pay) {
+          payments.forEach(function (payment) {
             const row = document.createElement("tr");
-            row.innerHTML = `<td>$${pay.amount}</td>
-                             <td>${pay.status}</td>
+            row.innerHTML = `<td>${payment.amount}</td>
+                             <td>${payment.status}</td>
                              <td>${new Date(
-                               pay.timestamp
+                               payment.timestamp
                              ).toLocaleString()}</td>`;
             tbody.appendChild(row);
           });
           table.appendChild(tbody);
           list.appendChild(table);
         } catch (err) {
-          alert("Error fetching payment details: " + err);
+          alert("Error fetching payments: " + err);
         }
       });
   }
 });
+
+// function to check

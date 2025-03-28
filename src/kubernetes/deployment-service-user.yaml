@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: onlineeventbookingumerkhan
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service-1
+          image: umerkhan2003/src-user-service:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: user-service-db-uri # Using the key from the ConfigMap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: onlineeventbookingumerkhan
+spec:
+  selector:
+    app: user-service
+  ports:
+    - protocol: TCP
+      port: 3000 # Exposes port 3000 for internal communication
+      targetPort: 3000 # Forwards to the container's port 3000
+  type: ClusterIP # Internal service accessible within the cluster

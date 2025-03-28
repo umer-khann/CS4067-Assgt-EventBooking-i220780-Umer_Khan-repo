@@ -11,7 +11,14 @@ const logger = require("./config/logger");
 const app = express();
 connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:8080", // or your frontend URL
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
 app.use(bodyParser.json());
 app.use(morgan("combined")); // logs requests
 

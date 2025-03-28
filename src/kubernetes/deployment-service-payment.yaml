@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: onlineeventbookingumerkhan
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service-1
+          image: src-payment-service:latest
+          imagePullPolicy: IfNotPresent # Ensures the container uses the local image if available
+          ports:
+            - containerPort: 3003
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: payment-service-db-uri # Using the key from the ConfigMap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: onlineeventbookingumerkhan
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - protocol: TCP
+      port: 3003
+      targetPort: 3003
+  type: ClusterIP # ClusterIP service to expose it within the cluster

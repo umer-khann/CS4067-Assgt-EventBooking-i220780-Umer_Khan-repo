@@ -1,5 +1,6 @@
 const Notification = require("../models/Notification");
 const logger = require("../config/logger");
+const amqp = require("amqplib");
 
 exports.sendNotification = async (req, res) => {
   try {
@@ -21,3 +22,12 @@ exports.sendNotification = async (req, res) => {
     res.status(500).json({ error: "Notification failed" });
   }
 };
+
+// Dynamic RabbitMQ URL selection based on environment
+const RABBITMQ_URL =
+  process.env.K8S_ENV === "true"
+    ? "amqp://rabbitmq-service.onlineeventbookingumerkhan.svc.cluster.local:5672"
+    : "amqp://host.docker.internal";
+
+console.log("K8S_ENV:", process.env.K8S_ENV);
+console.log("url", RABBITMQ_URL);

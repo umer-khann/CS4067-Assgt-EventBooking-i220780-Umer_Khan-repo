@@ -1,4 +1,16 @@
 <!DOCTYPE html>
+<!-- In your index.html, before your main script -->
+<script>
+  window.ENV = {
+    USER_SERVICE: process.env.REACT_APP_USER_SERVICE_URL,
+    EVENT_SERVICE: process.env.REACT_APP_EVENT_SERVICE_URL,
+    BOOKING_SERVICE: process.env.REACT_APP_BOOKING_SERVICE_URL,
+    PAYMENT_SERVICE: process.env.REACT_APP_PAYMENT_SERVICE_URL,
+    NOTIFICATION_SERVICE: process.env.REACT_APP_NOTIFICATION_SERVICE_URL,
+  };
+</script>
+<script src="main.js"></script>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />

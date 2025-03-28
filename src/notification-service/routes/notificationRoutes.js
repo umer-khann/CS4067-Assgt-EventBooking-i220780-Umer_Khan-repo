@@ -1,13 +1,12 @@
-// notification-service/routes/notificationRoutes.js
+// POST endpoint: log a notification
 const express = require("express");
 const router = express.Router();
-const { sendNotification } = require("../controllers/notificationController");
 const Notification = require("../models/Notification");
+const logger = require("../config/logger");
+const { sendNotification } = require("../controllers/notificationController");
 
-// POST endpoint: log a notification
 router.post("/", sendNotification);
-
-// GET endpoint: fetch notifications by userId
+// GET endpoint: retrieve notifications for a user from the database
 router.get("/", async (req, res) => {
   const userId = req.query.userId;
   if (!userId) {
@@ -17,7 +16,7 @@ router.get("/", async (req, res) => {
     const notifications = await Notification.find({ userId });
     res.json(notifications);
   } catch (err) {
-    console.error("Error fetching notifications:", err);
+    logger.error("Error fetching notifications from DB: " + err.message);
     res.status(500).json({ error: err.message });
   }
 });

@@ -1,4 +1,4 @@
-const Payment = require("../models/Payment");
+const Payment = require("../models/payment");
 const logger = require("../config/logger");
 
 exports.processPayment = async (req, res) => {

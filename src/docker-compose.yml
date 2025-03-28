@@ -1,0 +1,117 @@
+version: "3.8"
+
+services:
+  booking-service:
+    build: ./booking-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - K8S_ENV=false
+      - MONGO_URI=mongodb://mongo:27017/booking-service
+      - EVENT_SERVICE_URL=http://host.docker.internal:3001
+      - PAYMENT_SERVICE_URL=http://host.docker.internal:3003
+      - RABBITMQ_URL=amqp://host.docker.internal
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-network
+
+  event-service:
+    build: ./event-service
+    ports:
+      - "3001:3001"
+    environment:
+      - K8S_ENV=false
+      - PORT=3001
+      - MONGO_URI=mongodb://mongo:27017/event-service
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "3004:3004"
+    environment:
+      - K8S_ENV=false
+      - PORT=3004
+      - MONGO_URI=mongodb://mongo:27017/notification-service
+      - RABBITMQ_URL=amqp://host.docker.internal
+      - BOOKING_SERVICE_URL=http://host.docker.internal:3002
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-network
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "3000:3000"
+    environment:
+      - K8S_ENV=false
+      - PORT=3000
+      - MONGO_URI=mongodb://mongo:27017/user-service
+      - BOOKING_SERVICE_URL=http://host.docker.internal:3002
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "3003:3003"
+    environment:
+      - K8S_ENV=false
+      - PORT=3003
+      - MONGO_URI=mongodb://mongo:27017/payment-service
+      - BOOKING_SERVICE_URL=http://host.docker.internal:3002
+      - RABBITMQ_URL=amqp://host.docker.internal
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  front-end:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    environment:
+      - REACT_APP_USER_SERVICE_URL=http://host.docker.internal:3000/users
+      - REACT_APP_EVENT_SERVICE_URL=http://host.docker.internal:3001/events
+      - REACT_APP_BOOKING_SERVICE_URL=http://host.docker.internal:3002/bookings
+      - REACT_APP_PAYMENT_SERVICE_URL=http://host.docker.internal:3003/payments
+      - REACT_APP_NOTIFICATION_SERVICE_URL=http://host.docker.internal:3004/notifications
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:6
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=eventbooking
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

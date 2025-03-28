@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: onlineeventbookingumerkhan
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service # Fixed to match the template label
+  template:
+    metadata:
+      labels:
+        app: notification-service # Fixed to match the selector
+    spec:
+      containers:
+        - name: notification-service-1
+          image: src-notification-service:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 3004
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: notification-service-db-uri
+
+            - name: K8S_ENV
+              value: "true"
+
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: onlineeventbookingumerkhan
+spec:
+  selector:
+    app: notification-service # Matches the corrected Deployment label
+  ports:
+    - protocol: TCP
+      port: 3004
+      targetPort: 3004
+  type: ClusterIP
